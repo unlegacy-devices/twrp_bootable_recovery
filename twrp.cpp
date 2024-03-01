@@ -327,7 +327,7 @@ int main(int argc, char **argv) {
 		}
 	} else if (datamedia) {
 		TWFunc::check_selinux_support();
-		if (tw_get_default_metadata(DataManager::GetSettingsStoragePath().c_str()) != 0) {
+		if (tw_get_default_metadata(DataManager::GetCurrentStoragePath().c_str()) != 0) {
 			LOGINFO("Failed to get default contexts and file mode for storage files.\n");
 		} else {
 			LOGINFO("Got default contexts and file mode for storage files.\n");
