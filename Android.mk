@@ -356,15 +356,6 @@ ifeq ($(TW_INCLUDE_CRYPTO), true)
             LOCAL_CFLAGS += -DTW_INCLUDE_FBE_METADATA_DECRYPT
         endif
     endif
-    ifneq ($(TW_CRYPTO_USE_SYSTEM_VOLD),)
-    ifneq ($(TW_CRYPTO_USE_SYSTEM_VOLD),false)
-		ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 26; echo $$?),0)
-			TW_INCLUDE_LIBRESETPROP := true
-		endif
-        LOCAL_CFLAGS += -DTW_CRYPTO_USE_SYSTEM_VOLD
-        LOCAL_STATIC_LIBRARIES += libvolddecrypt
-    endif
-    endif
 endif
 WITH_CRYPTO_UTILS := \
     $(if $(wildcard system/core/libcrypto_utils/android_pubkey.c),true)
