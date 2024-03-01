@@ -163,6 +163,7 @@ enum TW_FSTAB_FLAGS {
 	TWFLAG_KEYDIRECTORY,
 	TWFLAG_WRAPPEDKEY,
 	TWFLAG_ADOPTED_MOUNT_DELAY,
+	TWFLAG_FS_COMPRESS,
 	TWFLAG_DM_USE_ORIGINAL_PATH,
 };
 
@@ -210,6 +211,7 @@ const struct flag_list tw_flags[] = {
 	{ "keydirectory=",          TWFLAG_KEYDIRECTORY },
 	{ "wrappedkey",             TWFLAG_WRAPPEDKEY },
 	{ "adopted_mount_delay=",   TWFLAG_ADOPTED_MOUNT_DELAY },
+	{ "fscompress",             TWFLAG_FS_COMPRESS },
 	{ "dm_use_original_path",   TWFLAG_DM_USE_ORIGINAL_PATH },
 	{ 0,                        0 },
 };
@@ -278,6 +280,7 @@ TWPartition::TWPartition() {
 	Adopted_Mount_Delay = 0;
 	Original_Path = "";
 	Use_Original_Path = false;
+	Needs_Fs_Compress = false;
 }
 
 TWPartition::~TWPartition(void) {
@@ -1001,6 +1004,14 @@ void TWPartition::Apply_TW_Flag(const unsigned flag, const char* str, const bool
 			Key_Directory = str;
 		case TWFLAG_DM_USE_ORIGINAL_PATH:
 			Use_Original_Path = true;
+		case TWFLAG_FS_COMPRESS:
+			#ifdef TW_ENABLE_FS_COMPRESSION
+				Needs_Fs_Compress = true;
+				LOGINFO("Enabling 'fs compression'\n");
+			#else
+				LOGINFO("Ignoring the 'fscompress' fstab flag\n");
+			#endif
+			break;
 		default:
 			// Should not get here
 			LOGINFO("Flag identified for processing, but later unmatched: %i\n", flag);
@@ -2202,6 +2213,9 @@ bool TWPartition::Wipe_EXTFS(string File_System) {
 		gui_msg(Msg(msg::kError, "unable_to_wipe=Unable to wipe {1}.")(Display_Name));
 		return false;
 	}
+	
+	if (Needs_Fs_Compress)
+		f2fs_command += " -O compression,extra_attr";
 
 	if (TWFunc::Path_Exists("/sbin/e2fsdroid")) {
 		const string& File_Contexts_Entry = (Mount_Point == "/system_root" ? "/" : Mount_Point);

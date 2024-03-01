@@ -198,6 +198,10 @@ endif
 LOCAL_C_INCLUDES += external/libselinux/include
 LOCAL_SHARED_LIBRARIES += libselinux
 
+ifeq ($(TW_ENABLE_FS_COMPRESSION),true)
+    LOCAL_CFLAGS += -DTW_ENABLE_FS_COMPRESSION
+endif
+
 ifeq ($(AB_OTA_UPDATER),true)
     LOCAL_CFLAGS += -DAB_OTA_UPDATER=1
     LOCAL_SHARED_LIBRARIES += libhardware android.hardware.boot@1.0
