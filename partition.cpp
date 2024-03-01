@@ -1201,6 +1201,8 @@ void TWPartition::Setup_Data_Media() {
 		wipe_exclusions.add_absolute_dir(Mount_Point + "/misc/vold"); // adopted storage keys
 		ExcludeAll(Mount_Point + "/.layout_version");
 		ExcludeAll(Mount_Point + "/system/storage.xml");
+		
+		backup_exclusions.add_absolute_dir("/data/system/users/0/package-restrictions.xml");
 	} else {
 		int i;
 		string path;
