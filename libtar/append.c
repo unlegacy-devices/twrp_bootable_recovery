@@ -78,7 +78,7 @@ tar_append_file(TAR *t, const char *realname, const char *savename)
 	char path[MAXPATHLEN];
 
 #ifdef DEBUG
-	printf("==> tar_append_file(TAR=0x%lx (\"%s\"), realname=\"%s\", "
+	LOG("==> tar_append_file(TAR=0x%lx (\"%s\"), realname=\"%s\", "
 	       "savename=\"%s\")\n", t, t->pathname, realname,
 	       (savename ? savename : "[NULL]"));
 #endif
@@ -117,7 +117,7 @@ tar_append_file(TAR *t, const char *realname, const char *savename)
 		if (lgetfilecon(realname, &selinux_context) >= 0)
 		{
 			t->th_buf.selinux_context = strdup(selinux_context);
-			printf("  ==> set selinux context: %s\n", selinux_context);
+			LOG("  ==> set selinux context: %s\n", selinux_context);
 			freecon(selinux_context);
 		}
 		else
@@ -139,7 +139,7 @@ tar_append_file(TAR *t, const char *realname, const char *savename)
 
 		t->th_buf.eep = (struct ext4_encryption_policy*)malloc(sizeof(struct ext4_encryption_policy));
 		if (!t->th_buf.eep) {
-			printf("malloc ext4_encryption_policy\n");
+			LOG("malloc ext4_encryption_policy\n");
 			return -1;
 		}
 		if (e4crypt_policy_get_struct(realname, t->th_buf.eep))
@@ -149,10 +149,10 @@ tar_append_file(TAR *t, const char *realname, const char *savename)
 			char policy_hex[EXT4_KEY_DESCRIPTOR_SIZE_HEX];
 			policy_to_hex(t->th_buf.eep->master_key_descriptor, policy_hex);
 			if (lookup_ref_key(t->th_buf.eep->master_key_descriptor, &tar_policy[0])) {
-				printf("found policy '%s' - '%s' - '%s'\n", realname, tar_policy, policy_hex);
+				LOG("found policy '%s' - '%s' - '%s'\n", realname, tar_policy, policy_hex);
 				memcpy(t->th_buf.eep->master_key_descriptor, tar_policy, EXT4_KEY_DESCRIPTOR_SIZE);
 			} else {
-				printf("failed to lookup tar policy for '%s' - '%s'\n", realname, policy_hex);
+				LOG("failed to lookup tar policy for '%s' - '%s'\n", realname, policy_hex);
 				free(t->th_buf.eep);
 				t->th_buf.eep = NULL;
 				return -1;
@@ -192,21 +192,21 @@ tar_append_file(TAR *t, const char *realname, const char *savename)
 		{
 			t->th_buf.has_user_default = 1;
 #if 1 //def DEBUG
-			printf("storing xattr user.default\n");
+			LOG("storing xattr user.default\n");
 #endif
 		}
 		if (getxattr(realname, "user.inode_cache", NULL, 0) >= 0)
 		{
 			t->th_buf.has_user_cache = 1;
 #if 1 //def DEBUG
-			printf("storing xattr user.inode_cache\n");
+			LOG("storing xattr user.inode_cache\n");
 #endif
 		}
 		if (getxattr(realname, "user.inode_code_cache", NULL, 0) >= 0)
 		{
 			t->th_buf.has_user_code_cache = 1;
 #if 1 //def DEBUG
-			printf("storing xattr user.inode_code_cache\n");
+			LOG("storing xattr user.inode_code_cache\n");
 #endif
 		}
 	}
@@ -222,7 +222,7 @@ tar_append_file(TAR *t, const char *realname, const char *savename)
 	else
 	{
 #ifdef DEBUG
-		printf("+++ adding hash for device (0x%lx, 0x%lx)...\n",
+		LOG("+++ adding hash for device (0x%lx, 0x%lx)...\n",
 		       major(s.st_dev), minor(s.st_dev));
 #endif
 		td = (tar_dev_t *)calloc(1, sizeof(tar_dev_t));
@@ -239,7 +239,7 @@ tar_append_file(TAR *t, const char *realname, const char *savename)
 	{
 		ti = (tar_ino_t *)libtar_hashptr_data(&hp);
 #ifdef DEBUG
-		printf("    tar_append_file(): encoding hard link \"%s\" "
+		LOG("    tar_append_file(): encoding hard link \"%s\" "
 		       "to \"%s\"...\n", realname, ti->ti_name);
 #endif
 		t->th_buf.typeflag = LNKTYPE;
@@ -248,7 +248,7 @@ tar_append_file(TAR *t, const char *realname, const char *savename)
 	else
 	{
 #ifdef DEBUG
-		printf("+++ adding entry: device (0x%lx,0x%lx), inode %ld "
+		LOG("+++ adding entry: device (0x%lx,0x%lx), inode %ld "
 		       "(\"%s\")...\n", major(s.st_dev), minor(s.st_dev),
 		       s.st_ino, realname);
 #endif
