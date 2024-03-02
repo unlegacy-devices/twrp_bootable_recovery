@@ -56,7 +56,8 @@ LOCAL_SHARED_LIBRARIES += libz \
                           libutils \
                           libaosprecovery \
                           libselinux \
-                          libbase
+                          libbase \
+                          liblog
 
 LOCAL_C_INCLUDES += bootable/recovery/twrplibusbhost/include
 
