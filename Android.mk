@@ -437,6 +437,9 @@ endif
 ifeq ($(TW_EXCLUDE_NANO), true)
     LOCAL_CFLAGS += -DTW_EXCLUDE_NANO
 endif
+ifeq ($(TW_ENABLE_BLKDISCARD), true)
+    LOCAL_CFLAGS += -DTW_ENABLE_BLKDISCARD
+endif
 
 TWRP_REQUIRED_MODULES += \
     dump_image \

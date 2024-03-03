@@ -128,6 +128,7 @@ public:
 	bool ReMount_RW(bool Display_Error);                                      // Remounts the partition with read/write access
 	bool Wipe(string New_File_System);                                        // Wipes the partition
 	bool Wipe();                                                              // Wipes the partition
+	bool BlkDiscard();                                                        // Clear the partition using BLKDISCARD ioctl
 	bool Wipe_AndSec();                                                       // Wipes android secure
 	bool Can_Repair();                                                        // Checks to see if we have everything needed to be able to repair the current file system
 	uint64_t Get_Max_FileSize();                                              // get partition maxFileSie

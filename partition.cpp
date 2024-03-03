@@ -1780,6 +1780,13 @@ bool TWPartition::Wipe(string New_File_System) {
 	return wiped;
 }
 
+bool TWPartition::BlkDiscard() {
+	string cmd;
+	LOGINFO("Perform BLKDISCARD on block device %s\n", Actual_Block_Device.c_str());
+	cmd = "/system/bin/toybox blkdiscard " + Actual_Block_Device;
+	return (TWFunc::Exec_Cmd(cmd) == 0);
+}
+
 bool TWPartition::Wipe() {
 	if (Is_File_System(Current_File_System))
 		return Wipe(Current_File_System);
@@ -2755,6 +2762,9 @@ bool TWPartition::Raw_Read_Write(PartitionSettings *part_settings) {
 			destfn = part_settings->Backup_Folder + "/" + Backup_FileName;
 		}
 	}
+#ifdef TW_ENABLE_BLKDISCARD
+		BlkDiscard();
+#endif
 	else {
 		destfn = Actual_Block_Device;
 		if (part_settings->adbbackup) {
@@ -3284,6 +3294,10 @@ bool TWPartition::Is_Sparse_Image(const string& Filename) {
 
 bool TWPartition::Flash_Sparse_Image(const string& Filename) {
 	string Command;
+
+#ifdef TW_ENABLE_BLKDISCARD
+	BlkDiscard();
+#endif
 
 	gui_msg(Msg("flashing=Flashing {1}...")(Display_Name));
 
